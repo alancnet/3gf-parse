@@ -4,7 +4,6 @@ const path = require('path')
 const getConfig = require('microservice-config');
 
 const config = getConfig({raw: false});
-console.log(JSON.stringify(config, null, 2));
 const inputFile = config._[0];
 const outputFile = config._[1];
 if (!inputFile) {
