@@ -1,11 +1,14 @@
 const { SerialStreamReader } = require('serial-stream')
 const fs = require('fs')
 const path = require('path')
+const getConfig = require('microservice-config');
 
-const inputFile = process.argv[2];
-const outputFile = process.argv[3];
+const config = getConfig({raw: false});
+console.log(JSON.stringify(config, null, 2));
+const inputFile = config._[0];
+const outputFile = config._[1];
 if (!inputFile) {
-  console.error(`Usage: ${path.basename(process.argv[1])} <input .3fg file> [output .csv file]`)
+  console.error(`Usage: ${path.basename(process.argv[1])} <input .3fg file> [output .csv file] [--raw]`)
 } else {
   const output = outputFile
     ? fs.createWriteStream(outputFile)
@@ -20,9 +23,11 @@ if (!inputFile) {
       reader.readInt16BE(),
       reader.readInt16BE()
     ])
-      .then(([dMs, a0, a1, a2]) =>
-        writer.write(`${dMs},${a0},${a1},${a2}\n`)
-      )
+      .then(([dMs, a0, a1, a2]) => writer.write([]
+          .concat(config.raw ? [dMs, a0, a1, a2] : [])
+          .concat([(dMs * .001).toFixed(2), (a0 / 128).toFixed(3), (a1 / 128).toFixed(3), (a2 / 128).toFixed(3)])
+          .join(',') + '\n'
+      ))
       .then(read)
 
   writer.write('dMs,a0,a1,a2\n')

@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "microservice-config": "0.0.1",
     "serial-stream": "0.0.2"
   }
 }
